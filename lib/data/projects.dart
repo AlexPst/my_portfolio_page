@@ -13,7 +13,7 @@ const projects = <Project>[
     year: 2025,
     status: ProjectStatus.released,
     platforms: [Platform.android, Platform.linux],
-    tech: ['Flutter', 'Riverpod', 'go_router', 'Drift', 'Material 3', 'gen-l10n'],
+    tech: ['Flutter', 'Riverpod', 'go_router', 'Drift', 'Freezed', 'fl_chart', 'Material 3', 'gen-l10n'],
     accent: '#0175c2',
     featured: true,
     problem: (
@@ -47,33 +47,37 @@ const projects = <Project>[
         title: (ru: 'Офлайн-first на Drift', en: 'Offline-first with Drift'),
         text: (
           ru:
-              'Все данные лежат в локальной SQLite через Drift. Типобезопасные запросы и реактивные '
-              'стримы: экран обновляется сам, когда меняется таблица.',
+              'Все данные лежат в локальной SQLite через Drift: таблицы учеников, предметов, занятий, '
+              'пакетов и оплат с SQL-ограничениями. Связанные записи меняются в одной транзакции, '
+              'а реактивные запросы обновляют экран сами.',
           en:
-              'All data lives in a local SQLite database via Drift. Type-safe queries and reactive '
-              'streams: a screen updates by itself when a table changes.',
+              'All data lives in a local SQLite database via Drift: students, subjects, lessons, packages '
+              'and payments tables with SQL constraints. Related records change in a single transaction, '
+              'and reactive queries refresh the screen on their own.',
         ),
       ),
       (
         title: (ru: 'Долг вычисляется, а не хранится', en: 'Debt is derived, not stored'),
         text: (
           ru:
-              'Баланс ученика считается из проведённых занятий, ставок и оплат. Нет отдельного поля, '
-              'которое может разойтись с реальностью после правки старой записи.',
+              'Баланс ученика — это «оплачено минус начислено» по занятиям и пакетам. Нет отдельного '
+              'поля, которое разойдётся с реальностью после правки старой записи. Суммы хранятся '
+              'в value-объекте Money, а не в double.',
           en:
-              'A student balance is computed from held lessons, rates and payments. There is no separate '
-              'field that could drift out of sync after editing an old record.',
+              'A student balance is "paid minus charged" across lessons and packages. There is no separate '
+              'field that could drift out of sync after editing an old record. Amounts use a Money value '
+              'object instead of double.',
         ),
       ),
       (
-        title: (ru: 'Riverpod как слой состояния', en: 'Riverpod for state'),
+        title: (ru: 'Riverpod с кодогенерацией и тесты', en: 'Generated Riverpod and tests'),
         text: (
           ru:
-              'Провайдеры связывают репозитории с UI и кешируют производные данные (расписание недели, '
-              'список должников). Зависимости явные, логику легко тестировать отдельно от виджетов.',
+              'Провайдеры объявлены через riverpod_annotation и связывают репозитории, use case и UI. '
+              'Зависимости явные, поэтому репозитории, доменные сервисы и экраны покрыты тестами.',
           en:
-              'Providers connect repositories to the UI and cache derived data (weekly schedule, list of '
-              'debtors). Dependencies are explicit, and logic is easy to test apart from widgets.',
+              'Providers are declared with riverpod_annotation and connect repositories, use cases and UI. '
+              'Dependencies are explicit, so repositories, domain services and screens are covered by tests.',
         ),
       ),
       (
@@ -90,25 +94,51 @@ const projects = <Project>[
     ],
     architecture: (
       ru:
-          'Clean Architecture с разбиением по фичам. Каждая фича содержит слои data (Drift-таблицы, '
-          'DAO, репозитории), domain (сущности и правила, например расчёт долга) и presentation '
-          '(экраны и провайдеры). Общий код — тема, роутинг, локализация — вынесен в core.',
+          'Clean Architecture с разбиением по фичам. В каждой фиче слои data (репозитории на Drift '
+          'и мапперы), domain (Freezed-модели, интерфейсы репозиториев, сервисы и use case, например '
+          'политика начислений) и presentation (экраны, контроллеры, провайдеры). Роутер и тема — '
+          'в app, база данных, общие виджеты и доменные типы вроде Money — в core.',
       en:
-          'Feature-first Clean Architecture. Each feature has data (Drift tables, DAOs, repositories), '
-          'domain (entities and rules such as debt calculation) and presentation (screens and providers) '
-          'layers. Shared code — theme, routing, localization — lives in core.',
+          'Feature-first Clean Architecture. Each feature has data (Drift repositories and mappers), '
+          'domain (Freezed models, repository interfaces, services and use cases such as the billing '
+          'policy) and presentation (screens, controllers, providers) layers. Router and theme live in '
+          'app; the database, shared widgets and domain types such as Money live in core.',
     ),
-    architectureTree: '''
+    architectureTree: (
+      ru: '''
 lib/
-├── core/            # тема, роутер, l10n, база данных
+├── app/              # роутер, тема, bootstrap
+├── core/             # Drift, Money, общие виджеты
 └── features/
+    ├── finance/
+    │   ├── data/         # репозитории, мапперы
+    │   ├── domain/       # модели, сервисы, use case
+    │   └── presentation/ # экраны, провайдеры
+    ├── lessons/
     ├── students/
-    │   ├── data/
-    │   ├── domain/
-    │   └── presentation/
-    ├── schedule/
-    ├── payments/
-    └── progress/''',
+    ├── subjects/
+    ├── progress/
+    ├── dashboard/
+    └── settings/''',
+      en: '''
+lib/
+├── app/              # router, theme, bootstrap
+├── core/             # Drift, Money, shared widgets
+└── features/
+    ├── finance/
+    │   ├── data/         # repositories, mappers
+    │   ├── domain/       # models, services, use cases
+    │   └── presentation/ # screens, providers
+    ├── lessons/
+    ├── students/
+    ├── subjects/
+    ├── progress/
+    ├── dashboard/
+    └── settings/''',
+    ),
+    links: [
+      SourceLink('https://github.com/AlexPst/TutorAppFlutter'),
+    ],
   ),
   Project(
     slug: 'portfolio-site',
@@ -183,13 +213,22 @@ lib/
           'Jaspr in static mode with multi-page routing. UI strings and content are separated, and '
           'routes for every language are built from a single list.',
     ),
-    architectureTree: '''
+    architectureTree: (
+      ru: '''
 lib/
 ├── components/      # layout, карточки, фильтр (@client)
 ├── pages/           # страницы
 ├── data/            # профиль, навыки, проекты
 ├── l10n/            # языки и строки
 └── styles/          # токены и глобальные стили''',
+      en: '''
+lib/
+├── components/      # layout, cards, filter (@client)
+├── pages/           # pages
+├── data/            # profile, skills, projects
+├── l10n/            # locales and strings
+└── styles/          # tokens and global styles''',
+    ),
     links: [
       SourceLink(SiteConfig.sourceUrl),
     ],

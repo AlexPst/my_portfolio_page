@@ -119,7 +119,7 @@ final class Project {
   final Localized architecture;
 
   /// Дерево каталогов, выводится моноширинным блоком.
-  final String? architectureTree;
+  final Localized? architectureTree;
   final List<Screenshot> screenshots;
   final List<ProjectLink> links;
 

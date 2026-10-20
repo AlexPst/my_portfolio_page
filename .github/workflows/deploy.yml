@@ -1,0 +1,105 @@
+name: CI / Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Один деплой за раз; новый пуш отменяет устаревшую проверку той же ветки.
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DART_SDK: 3.13.5
+  JASPR_CLI: 0.23.5
+
+jobs:
+  build:
+    name: Analyze, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ env.DART_SDK }}
+
+      - name: Cache pub
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ env.DART_SDK }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-${{ env.DART_SDK }}-
+
+      - run: dart pub get
+
+      - name: Format
+        run: dart format --output=none --set-exit-if-changed lib test tool
+
+      - name: Analyze
+        run: dart analyze --fatal-infos
+
+      - name: Test
+        run: dart test
+
+      - name: Install jaspr_cli
+        run: dart pub global activate jaspr_cli ${{ env.JASPR_CLI }}
+
+      # Сайт проекта: https://<owner>.github.io/<repo>/. Хост Pages — в нижнем регистре.
+      - name: Build
+        run: |
+          repo="${{ github.event.repository.name }}"
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          site="https://${owner}.github.io"
+          jaspr build \
+            --dart-define=BASE_PATH="/${repo}/" \
+            --dart-define=SITE_URL="${site}" \
+            --sitemap-domain="${site}/${repo}" \
+            --sitemap-exclude=404
+          dart run tool/postbuild.dart
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/jaspr
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  # Lighthouse по опубликованному сайту: реальные заголовки и сжатие Pages,
+  # а canonical совпадает с адресом страницы.
+  lighthouse:
+    name: Lighthouse
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          urls: |
+            ${{ needs.deploy.outputs.page_url }}
+            ${{ needs.deploy.outputs.page_url }}projects/
+            ${{ needs.deploy.outputs.page_url }}projects/tutor-app/
+            ${{ needs.deploy.outputs.page_url }}contacts/
+            ${{ needs.deploy.outputs.page_url }}en/

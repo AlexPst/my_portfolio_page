@@ -26,6 +26,15 @@ class HomePage extends StatelessComponent {
       route: '/',
       title: s.homeTitle,
       description: s.homeDescription,
+      ogType: OgType.profile,
+      structuredData: {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        'name': profile.name.of(locale),
+        'url': SiteConfig.absolute(locale.path('/')),
+        'inLanguage': locale.code,
+        'author': {'@type': 'Person', 'name': profile.name.of(locale), 'jobTitle': profile.role.of(locale)},
+      },
       children: [
         _hero(s),
         _about(s),

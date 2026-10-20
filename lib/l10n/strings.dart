@@ -41,6 +41,27 @@ final class Strings {
     required this.projectPagerLabel,
     required this.backToProjects,
     required this.opensInNewTab,
+    required this.contactsTitle,
+    required this.contactsDescription,
+    required this.contactsIntro,
+    required this.contactsListLabel,
+    required this.contactsLocation,
+    required this.contactsLocationValue,
+    required this.contactsCopy,
+    required this.contactsCopied,
+    required this.contactsCopyFailed,
+    required this.contactsWrite,
+    required this.notFoundTitle,
+    required this.notFoundText,
+    required this.notFoundHome,
+    required this.notFoundProjects,
+    required this.ogImageAlt,
+    required this.themeLabel,
+    required this.themeSystem,
+    required this.themeLight,
+    required this.themeDark,
+    required this.languageSwitchLabel,
+    required this.languageSwitchText,
     required this.footerBuiltWith,
     required this.footerSource,
     required this.footerContactsLabel,
@@ -86,6 +107,27 @@ final class Strings {
   final String projectPagerLabel;
   final String backToProjects;
   final String opensInNewTab;
+  final String contactsTitle;
+  final String contactsDescription;
+  final String contactsIntro;
+  final String contactsListLabel;
+  final String contactsLocation;
+  final String contactsLocationValue;
+  final String contactsCopy;
+  final String contactsCopied;
+  final String contactsCopyFailed;
+  final String contactsWrite;
+  final String notFoundTitle;
+  final String notFoundText;
+  final String notFoundHome;
+  final String notFoundProjects;
+  final String ogImageAlt;
+  final String themeLabel;
+  final String themeSystem;
+  final String themeLight;
+  final String themeDark;
+  final String languageSwitchLabel;
+  final String languageSwitchText;
   final String footerBuiltWith;
   final String footerSource;
   final String footerContactsLabel;
@@ -136,6 +178,28 @@ final class Strings {
     projectPagerLabel: 'Другие проекты',
     backToProjects: 'Все проекты',
     opensInNewTab: '(откроется в новой вкладке)',
+    contactsTitle: 'Контакты',
+    contactsDescription: 'Как связаться с Алексеем Поступинским: почта, Telegram и GitHub.',
+    contactsIntro:
+        'Открыт к работе в команде, фрилансу и заказам. Напишите на почту или в Telegram — расскажите о задаче, и я отвечу.',
+    contactsListLabel: 'Способы связи',
+    contactsLocation: 'Город',
+    contactsLocationValue: 'Екатеринбург, UTC+5',
+    contactsCopy: 'Скопировать',
+    contactsCopied: 'Скопировано',
+    contactsCopyFailed: 'Не удалось',
+    contactsWrite: 'Написать',
+    notFoundTitle: 'Страница не найдена',
+    notFoundText: 'Такой страницы нет: возможно, ссылка устарела или в адресе опечатка.',
+    notFoundHome: 'На главную',
+    notFoundProjects: 'К проектам',
+    ogImageAlt: 'Алексей Поступинский — Dart / Flutter-разработчик',
+    themeLabel: 'Тема оформления',
+    themeSystem: 'Как в системе',
+    themeLight: 'Светлая',
+    themeDark: 'Тёмная',
+    languageSwitchLabel: 'English version',
+    languageSwitchText: 'EN',
     footerBuiltWith: 'Сайт написан на Dart с помощью Jaspr',
     footerSource: 'Исходный код',
     footerContactsLabel: 'Контакты в соцсетях',
@@ -183,6 +247,28 @@ final class Strings {
     projectPagerLabel: 'More projects',
     backToProjects: 'All projects',
     opensInNewTab: '(opens in a new tab)',
+    contactsTitle: 'Contacts',
+    contactsDescription: 'How to reach Alexey Postupinskiy: email, Telegram and GitHub.',
+    contactsIntro:
+        'Open to full-time roles, freelance and contract work. Send me an email or a Telegram message about your project, and I will get back to you.',
+    contactsListLabel: 'Ways to get in touch',
+    contactsLocation: 'Location',
+    contactsLocationValue: 'Yekaterinburg, Russia (UTC+5)',
+    contactsCopy: 'Copy',
+    contactsCopied: 'Copied',
+    contactsCopyFailed: 'Copy failed',
+    contactsWrite: 'Message',
+    notFoundTitle: 'Page not found',
+    notFoundText: 'This page does not exist: the link may be outdated or the address has a typo.',
+    notFoundHome: 'Go home',
+    notFoundProjects: 'See projects',
+    ogImageAlt: 'Alexey Postupinskiy — Dart / Flutter developer',
+    themeLabel: 'Color theme',
+    themeSystem: 'System',
+    themeLight: 'Light',
+    themeDark: 'Dark',
+    languageSwitchLabel: 'Русская версия',
+    languageSwitchText: 'RU',
     footerBuiltWith: 'Built with Dart and Jaspr',
     footerSource: 'Source code',
     footerContactsLabel: 'Social links',

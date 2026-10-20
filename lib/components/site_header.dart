@@ -6,16 +6,21 @@ import '../data/site_config.dart';
 import '../l10n/app_locale.dart';
 import '../l10n/strings.dart';
 import '../styles/theme.dart';
+import 'theme_toggle.dart';
 
 typedef NavItem = ({String label, String route});
 
 class SiteHeader extends StatelessComponent {
-  const SiteHeader({required this.locale, required this.currentRoute, super.key});
+  const SiteHeader({required this.locale, required this.currentRoute, this.translatable = true, super.key});
 
   final AppLocale locale;
 
   /// Маршрут текущей страницы без префикса языка, например `/projects`.
   final String currentRoute;
+
+  /// Есть ли у страницы версия на другом языке. `false` — переключатель языка
+  /// ведёт на главную другой локали (например, со страницы 404).
+  final bool translatable;
 
   @override
   Component build(BuildContext context) {
@@ -49,8 +54,27 @@ class SiteHeader extends StatelessComponent {
             ]),
           ],
         ),
+        div(classes: 'site-header__controls', [
+          for (final other in AppLocale.values)
+            if (other != locale) _languageLink(other),
+          ThemeToggle(lang: locale.name),
+        ]),
       ]),
     ]);
+  }
+
+  /// Ссылка на ту же страницу на другом языке. Работает без JavaScript.
+  Component _languageLink(AppLocale target) {
+    final t = Strings.of(locale);
+    return a(
+      classes: 'site-header__lang',
+      href: SiteConfig.href(target.path(translatable ? currentRoute : '/')),
+      attributes: {'hreflang': target.code, 'lang': target.code, 'title': t.languageSwitchLabel},
+      [
+        span(attributes: {'aria-hidden': 'true'}, [.text(t.languageSwitchText)]),
+        span(classes: 'visually-hidden', [.text(t.languageSwitchLabel)]),
+      ],
+    );
   }
 
   bool _isActive(String route) =>
@@ -93,6 +117,31 @@ class SiteHeader extends StatelessComponent {
         animation: const Animation(name: 'blink', duration: Duration(milliseconds: 1100), count: double.infinity),
         color: AppColors.accent,
       ),
+      css('.site-header__nav').styles(margin: const .only(left: .auto)),
+      css('.site-header__controls').styles(
+        display: .flex,
+        alignItems: .center,
+        gap: .column(0.5.rem),
+      ),
+      css('.site-header__lang', [
+        css('&').styles(
+          display: .inlineFlex,
+          height: 2.375.rem,
+          padding: .symmetric(horizontal: 0.75.rem),
+          border: .all(color: AppColors.border, style: .solid, width: 1.px),
+          radius: .circular(999.px),
+          alignItems: .center,
+          color: AppColors.text,
+          fontFamily: AppFonts.mono,
+          fontSize: 0.8125.rem,
+          fontWeight: .w700,
+          textDecoration: const TextDecoration(line: .none),
+          backgroundColor: AppColors.surface,
+        ),
+        css('&:hover').styles(
+          border: .all(color: AppColors.accent, style: .solid, width: 1.px),
+        ),
+      ]),
       css('.site-header__nav ul').styles(
         display: .flex,
         padding: .zero,
@@ -121,7 +170,13 @@ class SiteHeader extends StatelessComponent {
     }),
     css.media(MediaQuery.screen(maxWidth: Breakpoints.sm.px), [
       css('.site-header .site-header__inner').styles(padding: .symmetric(vertical: 0.5.rem)),
-      css('.site-header .site-header__nav').styles(width: 100.percent, overflow: .auto),
+      // На телефоне: логотип и переключатели в первой строке, навигация — во второй.
+      css('.site-header .site-header__nav').styles(
+        width: 100.percent,
+        margin: .zero,
+        overflow: .auto,
+        order: 3,
+      ),
       css('.site-header .site-header__nav ul').styles(raw: {'margin-left': '-0.75rem'}),
     ]),
   ];

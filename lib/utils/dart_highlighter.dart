@@ -14,7 +14,8 @@ const _keywords = {
   'default', 'else', 'enum', 'extends', 'extension', 'false', 'final', 'for', 'if', 'implements',
   'import', 'in', 'interface', 'is', 'late', 'mixin', 'new', 'null', 'required', 'return',
   'sealed', 'static', 'super', 'switch', 'this', 'true', 'typedef', 'var', 'void', 'when',
-  'while', 'with', 'yield',
+  'while', 'with', 'yield', 'throw', 'rethrow', 'try', 'catch', 'on', 'finally', 'assert', 'do',
+  'factory', 'get', 'set', 'export', 'library', 'part', 'show', 'hide', 'external', 'covariant',
 };
 
 final _pattern = RegExp(

@@ -38,7 +38,8 @@ abstract final class Breakpoints {
 /// Ширина контентной колонки.
 const contentMaxWidth = Unit.pixels(1120);
 
-const _light = {
+/// CSS-переменные светлой темы. Публичные, чтобы тесты проверяли контраст.
+const lightTokens = {
   '--bg': '#f6f8fb',
   '--surface': '#ffffff',
   '--surface-raised': '#eef3f9',
@@ -54,7 +55,8 @@ const _light = {
   'color-scheme': 'light',
 };
 
-const _dark = {
+/// CSS-переменные тёмной темы.
+const darkTokens = {
   '--bg': '#0a101d',
   '--surface': '#0f1829',
   '--surface-raised': '#152036',
@@ -75,11 +77,11 @@ const _dark = {
 List<StyleRule> get themeStyles => [
   // Тема: светлая по умолчанию, тёмная по системной настройке,
   // явный выбор через data-theme перекрывает систему.
-  css(':root').styles(raw: _light),
+  css(':root').styles(raw: lightTokens),
   css.media(const MediaQuery.all(prefersColorScheme: .dark), [
-    css(':root:not([data-theme="light"])').styles(raw: _dark),
+    css(':root:not([data-theme="light"])').styles(raw: darkTokens),
   ]),
-  css(':root[data-theme="dark"]').styles(raw: _dark),
+  css(':root[data-theme="dark"]').styles(raw: darkTokens),
 
   css('*, *::before, *::after').styles(boxSizing: .borderBox),
   css('html').styles(

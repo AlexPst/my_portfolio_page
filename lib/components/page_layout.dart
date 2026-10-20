@@ -1,14 +1,20 @@
+import 'dart:convert';
+
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 
 import '../data/profile.dart';
+import '../data/site_config.dart';
 import '../l10n/app_locale.dart';
 import '../l10n/strings.dart';
 import '../styles/theme.dart';
 import 'site_footer.dart';
 import 'site_header.dart';
 
-/// Общий каркас страницы: skip-link, шапка, `<main>`, подвал и мета-теги.
+/// Значение `og:type`.
+enum OgType { website, article, profile }
+
+/// Общий каркас страницы: skip-link, шапка, `<main>`, подвал и SEO-мета.
 class PageLayout extends StatelessComponent {
   const PageLayout({
     required this.locale,
@@ -16,6 +22,10 @@ class PageLayout extends StatelessComponent {
     required this.title,
     required this.description,
     required this.children,
+    this.ogType = OgType.website,
+    this.indexable = true,
+    this.localized = true,
+    this.structuredData,
     super.key,
   });
 
@@ -28,21 +38,79 @@ class PageLayout extends StatelessComponent {
   final String title;
   final String description;
   final List<Component> children;
+  final OgType ogType;
+
+  /// `false` — `noindex`, без canonical (например, для 404).
+  final bool indexable;
+
+  /// Есть ли у страницы версии на всех языках (для `hreflang`).
+  final bool localized;
+
+  /// Разметка schema.org в формате JSON-LD.
+  final Map<String, Object?>? structuredData;
 
   @override
   Component build(BuildContext context) {
     final s = Strings.of(locale);
-    final fullTitle = '$title — ${profile.name.of(locale)}';
+    final name = profile.name.of(locale);
+    final fullTitle = '$title — $name';
+    final url = SiteConfig.absolute(locale.path(route));
+    final image = SiteConfig.absolute('/images/og-${locale.code}.png');
 
     return .fragment([
       Document.html(attributes: {'lang': locale.code}),
-      Document.head(title: fullTitle, meta: {'description': description}),
+      Document.head(
+        title: fullTitle,
+        meta: {
+          'description': description,
+          'robots': indexable ? 'index, follow' : 'noindex, follow',
+          'author': name,
+          'twitter:card': 'summary_large_image',
+          'twitter:title': fullTitle,
+          'twitter:description': description,
+          'twitter:image': image,
+          'twitter:image:alt': s.ogImageAlt,
+        },
+        children: [
+          if (indexable) link(rel: 'canonical', href: url),
+          if (indexable && localized) ...[
+            for (final alt in AppLocale.values)
+              link(rel: 'alternate', href: SiteConfig.absolute(alt.path(route)), attributes: {'hreflang': alt.code}),
+            link(
+              rel: 'alternate',
+              href: SiteConfig.absolute(AppLocale.fallback.path(route)),
+              attributes: {'hreflang': 'x-default'},
+            ),
+          ],
+          _og('og:type', ogType.name),
+          _og('og:site_name', name),
+          _og('og:title', fullTitle),
+          _og('og:description', description),
+          _og('og:url', url),
+          _og('og:locale', locale.ogLocale),
+          for (final alt in AppLocale.values)
+            if (alt != locale) _og('og:locale:alternate', alt.ogLocale),
+          _og('og:image', image),
+          _og('og:image:type', 'image/png'),
+          _og('og:image:width', '1200'),
+          _og('og:image:height', '630'),
+          _og('og:image:alt', s.ogImageAlt),
+          if (structuredData case final data?)
+            script(
+              attributes: {'type': 'application/ld+json'},
+              // `</` внутри JSON закрыл бы тег script раньше времени.
+              content: jsonEncode(data).replaceAll('</', r'<\/'),
+            ),
+        ],
+      ),
       a(classes: 'skip-link', href: '#main', [.text(s.skipToContent)]),
-      SiteHeader(locale: locale, currentRoute: route),
+      SiteHeader(locale: locale, currentRoute: route, translatable: localized),
       main_(id: 'main', attributes: {'tabindex': '-1'}, children),
       SiteFooter(locale: locale),
     ]);
   }
+
+  static Component _og(String property, String content) => meta(attributes: {'property': property}, content: content);
 
   @css
   static List<StyleRule> get styles => [

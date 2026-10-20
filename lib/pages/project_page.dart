@@ -4,6 +4,7 @@ import 'package:jaspr/jaspr.dart';
 import '../components/breadcrumbs.dart';
 import '../components/code_window.dart';
 import '../components/page_layout.dart';
+import '../data/profile.dart';
 import '../data/project.dart';
 import '../data/projects.dart';
 import '../data/site_config.dart';
@@ -28,6 +29,8 @@ class ProjectPage extends StatelessComponent {
       route: project.route,
       title: title,
       description: project.tagline.of(locale),
+      ogType: OgType.article,
+      structuredData: _structuredData(title),
       children: [
         article(
           classes: 'project',
@@ -74,7 +77,12 @@ class ProjectPage extends StatelessComponent {
                     p([.text(project.architecture.of(locale))]),
                     if (project.architectureTree case final tree?)
                       div(classes: 'project__tree', [
-                        CodeWindow(source: tree, fileName: 'tree', caption: s.projectArchitecture, highlight: false),
+                        CodeWindow(
+                          source: tree.of(locale),
+                          fileName: 'tree',
+                          caption: s.projectArchitecture,
+                          highlight: false,
+                        ),
                       ]),
                   ]),
                   if (project.screenshots.isNotEmpty)
@@ -89,6 +97,24 @@ class ProjectPage extends StatelessComponent {
       ],
     );
   }
+
+  /// schema.org: приложение или сайт, в зависимости от платформы.
+  Map<String, Object?> _structuredData(String title) => {
+    '@context': 'https://schema.org',
+    '@type': project.platforms.contains(Platform.web) ? 'WebSite' : 'SoftwareApplication',
+    'name': title,
+    'description': project.tagline.of(locale),
+    'url': SiteConfig.absolute(locale.path(project.route)),
+    'inLanguage': locale.code,
+    'dateCreated': '${project.year}',
+    'author': {'@type': 'Person', 'name': profile.name.of(locale)},
+    if (!project.platforms.contains(Platform.web)) ...{
+      'applicationCategory': 'BusinessApplication',
+      'operatingSystem': project.platforms.map((platform) => platform.label).join(', '),
+    },
+    'keywords': project.tech.join(', '),
+    'sameAs': [for (final link in project.links) link.url],
+  };
 
   Component _header(Strings s, String title) {
     return header(classes: 'project__header reveal', [

@@ -1,7 +1,18 @@
 import '../l10n/app_locale.dart';
 
 /// Тип контакта: от него зависят иконка и подпись.
-enum ContactKind { email, telegram, github, linkedin, habr, hh }
+enum ContactKind {
+  email(label: (ru: 'Почта', en: 'Email')),
+  telegram(label: (ru: 'Telegram', en: 'Telegram')),
+  github(label: (ru: 'GitHub', en: 'GitHub')),
+  linkedin(label: (ru: 'LinkedIn', en: 'LinkedIn')),
+  habr(label: (ru: 'Хабр Карьера', en: 'Habr Career')),
+  hh(label: (ru: 'hh.ru', en: 'hh.ru'));
+
+  const ContactKind({required this.label});
+
+  final Localized label;
+}
 
 final class Contact {
   const Contact({required this.kind, required this.label, required this.url});

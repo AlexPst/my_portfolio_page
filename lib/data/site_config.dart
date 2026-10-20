@@ -13,12 +13,21 @@ abstract final class SiteConfig {
   static const sourceUrl = 'https://github.com/AlexPst/my_portfolio_page';
 
   /// Превращает внутренний маршрут (`/projects`) в href с учётом [basePath].
+  ///
+  /// Страницы собираются в `<route>/index.html`, а GitHub Pages редиректит `/projects`
+  /// на `/projects/`. Поэтому ссылки на страницы сразу заканчиваются слешем,
+  /// а ссылки на файлы (`404.html`, `images/og.png`) — нет.
   static String href(String route) {
-    final base = basePath.endsWith('/') ? basePath.substring(0, basePath.length - 1) : basePath;
-    if (route == '/') return '$base/';
-    return '$base$route';
+    final path = '${_base()}$route';
+    final isFile = route.split('/').last.contains('.');
+    return path.endsWith('/') || isFile ? path : '$path/';
   }
 
   /// Ссылка на файл из `web/` (например `images/me.webp`) с учётом [basePath].
-  static String asset(String path) => href(path.startsWith('/') ? path : '/$path');
+  static String asset(String path) => '${_base()}${path.startsWith('/') ? path : '/$path'}';
+
+  static String _base() => basePath.endsWith('/') ? basePath.substring(0, basePath.length - 1) : basePath;
+
+  /// Абсолютный URL для canonical, hreflang и Open Graph.
+  static String absolute(String route) => '$siteUrl${href(route)}';
 }
