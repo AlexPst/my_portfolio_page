@@ -4,8 +4,7 @@
 ///    сайту они не нужны, а `packages/` содержит исходники зависимостей.
 /// 2. В `sitemap.xml` добавляет адресам страниц завершающий слеш, как у canonical:
 ///    GitHub Pages отдаёт `/projects/index.html` по адресу `/projects/`.
-/// 3. Добавляет `.nojekyll`, чтобы Pages не обрабатывал сайт Jekyll'ом.
-/// 4. Проверяет, что ключевые файлы на месте; иначе завершается с ошибкой.
+/// 3. Проверяет, что ключевые файлы на месте; иначе завершается с ошибкой.
 ///
 /// Запуск после сборки: `dart run tool/postbuild.dart [build/jaspr]`.
 library;
@@ -28,7 +27,6 @@ void main(List<String> args) {
   }
 
   _fixSitemap(File('${dir.path}/sitemap.xml'));
-  File('${dir.path}/.nojekyll').writeAsStringSync('');
 
   final required = ['index.html', 'en/index.html', '404.html', 'sitemap.xml', 'robots.txt', 'main.client.dart.js'];
   final missing = [

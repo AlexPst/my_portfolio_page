@@ -70,7 +70,7 @@ lib/
   utils/               подсветка Dart-синтаксиса на этапе сборки
 tool/
   generate_assets.dart OG-картинки и иконки
-  postbuild.dart       чистка сборки, sitemap.xml, .nojekyll
+  postbuild.dart       чистка сборки, sitemap.xml, проверка файлов
 test/                  тесты логики, данных и контраста
 web/fonts/             Inter и JetBrains Mono (SIL OFL 1.1)
 ```

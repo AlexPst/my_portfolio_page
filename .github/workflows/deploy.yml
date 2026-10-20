@@ -23,14 +23,14 @@ jobs:
     name: Analyze, test, build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ env.DART_SDK }}
 
       - name: Cache pub
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.pub-cache
           key: pub-${{ runner.os }}-${{ env.DART_SDK }}-${{ hashFiles('pubspec.lock') }}
@@ -63,7 +63,7 @@ jobs:
             --sitemap-exclude=404
           dart run tool/postbuild.dart
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: build/jaspr
 
@@ -82,7 +82,7 @@ jobs:
       page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
   # Lighthouse по опубликованному сайту: реальные заголовки и сжатие Pages,
   # а canonical совпадает с адресом страницы.
@@ -91,9 +91,9 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: treosh/lighthouse-ci-action@v12
+      - uses: treosh/lighthouse-ci-action@12.6.2
         with:
           configPath: ./lighthouserc.json
           uploadArtifacts: true
