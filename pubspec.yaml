@@ -1,0 +1,20 @@
+name: my_portfolio_page
+description: Персональный сайт-портфолио Алексея Поступинского. 100% Dart на Jaspr.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  jaspr: ^0.23.5
+  jaspr_router: ^0.9.0
+
+dev_dependencies:
+  build_runner: ^2.15.1
+  build_web_compilers: ^4.8.5
+  jaspr_builder: ^0.23.5
+  lints: ^6.1.0
+
+jaspr:
+  mode: static
